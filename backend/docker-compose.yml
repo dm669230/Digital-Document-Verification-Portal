@@ -1,5 +1,4 @@
 services:
-  # MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: befisc_mongodb
@@ -12,11 +11,10 @@ services:
       MONGO_INITDB_DATABASE: befisc_db
     volumes:
       - mongodb_data:/data/db
-      - ./backend/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - befisc_network
 
-  # Mongo Express - Database Admin UI
   mongo-express:
     image: mongo-express:latest
     container_name: befisc_mongo_express
@@ -34,17 +32,15 @@ services:
     networks:
       - befisc_network
 
-  # Django Backend API
-  backend:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: befisc_backend
+  # Django web service
+  web:
+    build: .
+    container_name: befisc_web
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - .:/app
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=befisc.settings
@@ -54,23 +50,6 @@ services:
       - befisc_network
     working_dir: /app
     command: python manage.py runserver 0.0.0.0:8000
-
-  # React Frontend
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: befisc_frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
-      - REACT_APP_ENV=production
-    depends_on:
-      - backend
-    networks:
-      - befisc_network
 
 volumes:
   mongodb_data:

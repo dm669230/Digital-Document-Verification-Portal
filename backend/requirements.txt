@@ -1,0 +1,9 @@
+django==3.2.24
+djangorestframework==3.14.0
+djangorestframework-simplejwt==4.8.0
+pymongo==4.6.0
+mongoengine==0.27.0
+django-cors-headers==4.3.1
+Pillow==10.1.0
+python-decouple==3.8
+drf-yasg==1.21.7 

@@ -1,8 +1,10 @@
+version: '3.8'
+
 services:
   # MongoDB Database
   mongodb:
     image: mongo:7.0
-    container_name: befisc_mongodb
+    container_name: befisc_mongodb_dev
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -11,15 +13,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password123
       MONGO_INITDB_DATABASE: befisc_db
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data_dev:/data/db
       - ./backend/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
-      - befisc_network
+      - befisc_network_dev
 
   # Mongo Express - Database Admin UI
   mongo-express:
     image: mongo-express:latest
-    container_name: befisc_mongo_express
+    container_name: befisc_mongo_express_dev
     restart: unless-stopped
     ports:
       - "8081:8081"
@@ -32,49 +34,33 @@ services:
     depends_on:
       - mongodb
     networks:
-      - befisc_network
+      - befisc_network_dev
 
-  # Django Backend API
+  # Django Backend API (Development)
   backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile
-    container_name: befisc_backend
+    container_name: befisc_backend_dev
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - /app/venv  # Exclude virtual environment
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=befisc.settings
     depends_on:
       - mongodb
     networks:
-      - befisc_network
+      - befisc_network_dev
     working_dir: /app
     command: python manage.py runserver 0.0.0.0:8000
 
-  # React Frontend
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: befisc_frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
-      - REACT_APP_ENV=production
-    depends_on:
-      - backend
-    networks:
-      - befisc_network
-
 volumes:
-  mongodb_data:
+  mongodb_data_dev:
 
 networks:
-  befisc_network:
+  befisc_network_dev:
     driver: bridge

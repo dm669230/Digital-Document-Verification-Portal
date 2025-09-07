@@ -55,23 +55,6 @@ services:
     working_dir: /app
     command: python manage.py runserver 0.0.0.0:8000
 
-  # React Frontend
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: befisc_frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
-      - REACT_APP_ENV=production
-    depends_on:
-      - backend
-    networks:
-      - befisc_network
-
 volumes:
   mongodb_data:
 

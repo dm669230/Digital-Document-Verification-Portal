@@ -25,8 +25,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Change to the correct directory where manage.py is located
-WORKDIR /app/befisc
+# Set the correct working directory where manage.py is located
+WORKDIR /app
 
 # Expose port
 EXPOSE 8000
